@@ -6,6 +6,8 @@ Module that is shown after user tries to add his own recipe to the application
 
 This module could be opened in [Personal](https://github.com/iCookbook/Personal) module.
 
+It requires Core Data manager instance (protocol) for saving data in Core Data. This instance should be provided in `RecipeFormContext` structure.
+
 ## Use cases
 
 1. Create new recipe:
