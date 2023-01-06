@@ -14,6 +14,9 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'RecipeForm/Tests/**/*.{swift}'
   end
   
+  s.dependency 'Models'
   s.dependency 'Persistence'
+  s.dependency 'CommonUI'
   s.dependency 'Resources'
+  s.dependency 'Logger'
 end

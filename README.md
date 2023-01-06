@@ -18,7 +18,13 @@ It requires Core Data manager instance (protocol) for saving data in Core Data. 
 
 ## Dependencies
 
-This module has 2 dependencies:
+This module has 4 dependencies:
+
+- [CommonUI](https://github.com/iCookbook/CommonUI) for the extension of `UIAlertController` to mask Apple's error 
+- [Resources](https://github.com/iCookbook/Resources) for access to resources of the application
+- [Persistence](https://github.com/iCookbook/Persistence) to use data models add create/save/update favourites recipes
+- [Models](https://github.com/iCookbook/Models) to use `Persistence` models representatives
+- [Logger](https://github.com/iCookbook/Logger) to log data in debug mode
 
 - `Persistence` for access to Core Data models
 
