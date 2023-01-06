@@ -29,17 +29,21 @@ extension RecipeFormPresenter: RecipeFormModuleInput {
 
 extension RecipeFormPresenter: RecipeFormViewOutput {
     
+    /// Handles calling `viewDidLoad` method from view.
+    func viewDidLoad() {
+        interactor.provideRecipeData()
+    }
+    
+    func checkBarButtonEnabled(_ recipeData: RecipeData) {
+        interactor.checkBarButtonEnabled(recipeData)
+    }
+    
     func saveRecipe(with recipeData: RecipeData?) {
         guard let data = recipeData else { return } // do nothing
         
         DispatchQueue.global(qos: .userInitiated).async {
             self.interactor.saveRecipe(with: data)
         }
-    }
-    
-    /// Handles calling `viewDidLoad` method from view.
-    func viewDidLoad() {
-        interactor.provideRecipeData()
     }
     
     /// Tells module's output to close this module.
@@ -55,6 +59,13 @@ extension RecipeFormPresenter: RecipeFormInteractorOutput {
     /// - Parameter recipeData: Recipe data to provide.
     func didProvideRecipeData(_ recipeData: RecipeData) {
         view?.displayData(recipeData)
+    }
+    
+    /// Provides the result of checking filling all required fields from interactor to view.
+    ///
+    /// - Parameter result: Flag representing enabling bar buttom item.
+    func didCheckBarButtonEnabled(_ result: Bool) {
+        view?.changeBarButtonEnabledState(result)
     }
 }
 

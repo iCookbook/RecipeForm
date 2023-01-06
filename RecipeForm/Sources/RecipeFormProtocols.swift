@@ -18,10 +18,12 @@ public protocol RecipeFormModuleOutput: AnyObject {
 
 protocol RecipeFormViewInput: AnyObject {
     func displayData(_ recipeData: RecipeData)
+    func changeBarButtonEnabledState(_ flag: Bool)
 }
 
 protocol RecipeFormViewOutput: AnyObject {
     func viewDidLoad()
+    func checkBarButtonEnabled(_ recipeData: RecipeData)
     
     func saveRecipe(with recipeData: RecipeData?)
     func dismissThisModule()
@@ -29,11 +31,13 @@ protocol RecipeFormViewOutput: AnyObject {
 
 protocol RecipeFormInteractorInput: AnyObject {
     func provideRecipeData()
+    func checkBarButtonEnabled(_ recipeData: RecipeData)
     func saveRecipe(with recipeData: RecipeData)
 }
 
 protocol RecipeFormInteractorOutput: AnyObject {
     func didProvideRecipeData(_ recipeData: RecipeData)
+    func didCheckBarButtonEnabled(_ result: Bool)
 }
 
 protocol RecipeFormRouterInput: AnyObject {

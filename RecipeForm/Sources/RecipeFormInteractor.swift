@@ -25,7 +25,11 @@ extension RecipeFormInteractor: RecipeFormInteractorInput {
     
     /// Converts recipe from persistence to entity to display in view.
     func provideRecipeData() {
-        guard let recipe = recipe else { return } // do nothing, it's nil
+        guard let recipe = recipe else {
+            /// Provide empty recipe data.
+            presenter?.didProvideRecipeData(RecipeData.default)
+            return
+        }
         
         let steps = (recipe.steps?.array as? [Step])?.map {
             StepData(text: $0.text, imageData: $0.imageData)
@@ -45,6 +49,15 @@ extension RecipeFormInteractor: RecipeFormInteractorInput {
                               steps: steps)
         
         presenter?.didProvideRecipeData(data)
+    }
+    
+    /// Checks that all required fileds are filled.
+    ///
+    /// - Parameter recipeData: Recipe data to check.
+    func checkBarButtonEnabled(_ recipeData: RecipeData) {
+        presenter?.didCheckBarButtonEnabled(!recipeData.name.isEmpty &&
+                                            recipeData.numberOfServings != 0 &&
+                                            recipeData.cookingTime != 0)
     }
     
     /// Saves or updates recipe. It depends on was recipe provided or not (`nil`).

@@ -204,6 +204,7 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-RecipeForm_Example/Pods-RecipeForm_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CommonUI/CommonUI.framework",
 				"${BUILT_PRODUCTS_DIR}/Logger/Logger.framework",
 				"${BUILT_PRODUCTS_DIR}/Models/Models.framework",
 				"${BUILT_PRODUCTS_DIR}/Persistence/Persistence.framework",
@@ -212,6 +213,7 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CommonUI.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Logger.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Models.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Persistence.framework",

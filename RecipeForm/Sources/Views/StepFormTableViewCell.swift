@@ -1,5 +1,5 @@
 //
-//  StepFormCollectionViewCell.swift
+//  StepFormTableViewCell.swift
 //  RecipeForm
 //
 //  Created by Егор Бадмаев on 04.01.2023.
@@ -7,14 +7,18 @@
 
 import UIKit
 import Resources
+import Models
 
-final class StepFormCollectionViewCell: UICollectionViewCell {
+final class StepFormTableViewCell: UITableViewCell {
+    
+    /// Data for a step that will be provided from the outside and filled from the text fields using delegate.
+    var stepData: StepData?
     
     // MARK: - Private Properties
     
     private let stepNumberBackgroundView: UIView = {
         let view = UIView()
-//        view.backgroundColor = Colors.tertiaryLabel
+        view.backgroundColor = Colors.tertiaryLabel
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -34,14 +38,15 @@ final class StepFormCollectionViewCell: UICollectionViewCell {
     
     private let stepImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.image = Images.RecipeForm.sampleStepImage
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
     
     // MARK: - Init
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setupView()
     }
@@ -52,8 +57,14 @@ final class StepFormCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Public Methods
     
-    public func configure() {
+    public func configure(with stepData: StepData, number: Int) {
+        self.stepData = stepData
+        stepNumberLabel.text = String(number)
+        stepDescriptionTextView.text = stepData.text
         
+        if let data = stepData.imageData {
+            stepImageView.image = UIImage(data: data)
+        }
     }
     
     // MARK: - Private Methods
