@@ -6,6 +6,7 @@
 //  
 
 import UIKit
+import Persistence
 
 public final class RecipeFormAssembly {
     
@@ -30,6 +31,8 @@ public final class RecipeFormAssembly {
         presenter.moduleOutput = context.moduleOutput
         
         interactor.presenter = presenter
+        interactor.recipe = context.recipe
+        
         router.viewController = viewController
         router.presenter = presenter
         
@@ -47,8 +50,10 @@ public final class RecipeFormAssembly {
 
 public struct RecipeFormContext {
     weak var moduleOutput: RecipeFormModuleOutput?
+    let recipe: Recipe?
     
-    public init(moduleOutput: RecipeFormModuleOutput?) {
+    public init(moduleOutput: RecipeFormModuleOutput?, recipe: Recipe?) {
         self.moduleOutput = moduleOutput
+        self.recipe = recipe
     }
 }

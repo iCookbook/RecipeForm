@@ -5,7 +5,7 @@
 //  Created by Егор Бадмаев on 03.01.2023.
 //  
 
-import Foundation
+import Models
 
 final class RecipeFormPresenter {
     weak var view: RecipeFormViewInput?
@@ -28,9 +28,26 @@ extension RecipeFormPresenter: RecipeFormModuleInput {
 }
 
 extension RecipeFormPresenter: RecipeFormViewOutput {
+    
+    /// Handles calling `viewDidLoad` method from view.
+    func viewDidLoad() {
+        interactor.provideRecipeData()
+    }
+    
+    /// Tells module's output to close this module.
+    func dismissThisModule() {
+        moduleOutput?.recipeFormModuleDidFinish()
+    }
 }
 
 extension RecipeFormPresenter: RecipeFormInteractorOutput {
+    
+    /// Provides recipe data from interactor to view.
+    ///
+    /// - Parameter recipeData: Recipe data to provide.
+    func didProvideRecipeData(_ recipeData: RecipeData) {
+        view?.displayData(recipeData)
+    }
 }
 
 extension RecipeFormPresenter: RecipeFormRouterOutput {

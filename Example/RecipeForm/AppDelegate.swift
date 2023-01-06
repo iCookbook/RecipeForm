@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import RecipeForm
+import Persistence
+import Resources
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,7 +17,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        
+        let coreDataManager: CoreDataManagerProtocol = CoreDataManager(containerName: "Cookbook")
+        let context = RecipeFormContext(moduleDependency: coreDataManager)
+        let assembly = RecipeFormAssembly.assemble(with: context)
+        
+        let navController = UINavigationController(rootViewController: assembly.viewController)
+        navController.navigationBar.prefersLargeTitles = true
+        
+        // Resources.Fonts
+        Fonts.registerFonts()
+        navController.navigationBar.largeTitleTextAttributes = [.font: Fonts.largeTitle()]
+        navController.navigationBar.titleTextAttributes = [.font: Fonts.headline()]
+        
+        window.rootViewController = navController
+        window.makeKeyAndVisible()
+        self.window = window
+        
         return true
     }
     
