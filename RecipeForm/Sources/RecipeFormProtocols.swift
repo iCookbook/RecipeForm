@@ -23,11 +23,13 @@ protocol RecipeFormViewInput: AnyObject {
 protocol RecipeFormViewOutput: AnyObject {
     func viewDidLoad()
     
+    func saveRecipe(with recipeData: RecipeData?)
     func dismissThisModule()
 }
 
 protocol RecipeFormInteractorInput: AnyObject {
     func provideRecipeData()
+    func saveRecipe(with recipeData: RecipeData)
 }
 
 protocol RecipeFormInteractorOutput: AnyObject {

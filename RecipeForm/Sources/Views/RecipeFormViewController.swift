@@ -17,6 +17,12 @@ final class RecipeFormViewController: UIViewController {
     
     private var recipeData: RecipeData?
     
+    private lazy var saveBarButton: UIBarButtonItem = {
+        let barButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveButtonTapped))
+        barButton.isEnabled = false
+        return barButton
+    }()
+    
     // MARK: - Init
     
     init(presenter: RecipeFormViewOutput) {
@@ -40,12 +46,32 @@ final class RecipeFormViewController: UIViewController {
     // MARK: - Private Methods
     
     @objc private func dismissThisModule() {
-        presenter.dismissThisModule()
+        
+        defer {
+            presenter.dismissThisModule()
+        }
+        
+        if saveBarButton.isEnabled {
+            let alert = UIAlertController(title: Texts.RecipeForm.unsavedChangesTitle, message: Texts.RecipeForm.unsavedChangesDescription, preferredStyle: .actionSheet)
+            let yes = UIAlertAction(title: Texts.RecipeForm.save, style: .destructive, handler: { [unowned self] _ in
+                presenter.saveRecipe(with: recipeData)
+            })
+            let no = UIAlertAction(title: Texts.RecipeForm.cancel, style: .cancel)
+            
+            alert.addAction(yes)
+            alert.addAction(no)
+            
+            present(alert, animated: true)
+        }
+    }
+    
+    @objc private func saveButtonTapped() {
+        presenter.saveRecipe(with: recipeData)
     }
     
     private func setupView() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissThisModule))
-        navigationItem.rightBarButtonItem = editButtonItem
+        navigationItem.rightBarButtonItem = saveBarButton
         view.backgroundColor = Colors.systemBackground
         
         
@@ -55,12 +81,14 @@ final class RecipeFormViewController: UIViewController {
 extension RecipeFormViewController: RecipeFormViewInput {
     
     func displayData(_ recipeData: RecipeData) {
-        /// We do not need to update view if recipe was not provided for this module originally.
-        let viewToUpdateFlag = self.recipeData != nil
         self.recipeData = recipeData
-        
-        if viewToUpdateFlag {
-            
-        }
+        /*
+         /// We do not need to update view if recipe was not provided for this module originally.
+         let viewToUpdateFlag = self.recipeData != nil
+         self.recipeData = recipeData
+         
+         if viewToUpdateFlag {
+         
+         }*/
     }
 }

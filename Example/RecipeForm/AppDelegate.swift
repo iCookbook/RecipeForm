@@ -9,22 +9,24 @@
 import UIKit
 import RecipeForm
 import Persistence
+import Models
 import Resources
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    let coreDataManager: CoreDataManagerProtocol = CoreDataManager(containerName: "Cookbook")
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let window = UIWindow(frame: UIScreen.main.bounds)
         
-        let coreDataManager: CoreDataManagerProtocol = CoreDataManager(containerName: "Cookbook")
-        let context = RecipeFormContext(moduleDependency: coreDataManager)
+        let recipe = getRecipe()
+        let context = RecipeFormContext(moduleOutput: self, recipe: nil, moduleDependency: coreDataManager)
         let assembly = RecipeFormAssembly.assemble(with: context)
         
         let navController = UINavigationController(rootViewController: assembly.viewController)
-        navController.navigationBar.prefersLargeTitles = true
+        navController.navigationBar.prefersLargeTitles = false
         
         // Resources.Fonts
         Fonts.registerFonts()
@@ -58,5 +60,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+}
+
+extension AppDelegate: RecipeFormModuleOutput {
+    
+    func recipeFormModuleDidFinish() {
+        print("recipeFormModuleDidFinish")
+    }
+}
+
+private extension AppDelegate {
+    /*
+    func createNewRecipe() -> Persistence.Recipe {
+        let stepData = [StepData(text: "Make dough Make dough Make dough Make dough Make dough Make dough Make dough Make dough", imageData: Resources.Images.sampleRecipeImage.pngData()),
+                        StepData(text: "Make dough Make dough Make dough Make dough Make dough Make dough Make dough Make dough", imageData: Resources.Images.sampleRecipeImage.pngData()),
+                        StepData(text: "Make dough Make dough Make dough Make dough Make dough Make dough Make dough Make dough", imageData: Resources.Images.sampleRecipeImage.pngData()),
+                        StepData(text: "Make dough Make dough Make dough Make dough Make dough Make dough Make dough Make dough", imageData: Resources.Images.sampleRecipeImage.pngData()),
+                        StepData(text: "Make dough Make dough Make dough Make dough Make dough Make dough Make dough Make dough", imageData: Resources.Images.sampleRecipeImage.pngData()),
+        ]
+        let data = RecipeData(name: "Pizza", dateCreated: Date(), numberOfServings: 4, proteins: 120, fats: 350, carbohydrates: 600, calories: 2300, cookingTime: 120, comment: "My favourite pizza recipe! How wonderful it is! And this is description for this with two or more lines", ingredients: ["Tomato Pasta", "Flour", "Salt", "Pepper", "Mozzarella"], imageData: Resources.Images.sampleRecipeImage.pngData(), steps: stepData)
+        coreDataManager.createRecipe(with: data)
+        let recipes =
+    }
+     */
+    func getRecipe() -> Persistence.Recipe? {
+        let recipes = coreDataManager.fetchRecipes()
+        return recipes?.first
     }
 }

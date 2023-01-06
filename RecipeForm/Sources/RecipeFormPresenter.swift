@@ -29,6 +29,14 @@ extension RecipeFormPresenter: RecipeFormModuleInput {
 
 extension RecipeFormPresenter: RecipeFormViewOutput {
     
+    func saveRecipe(with recipeData: RecipeData?) {
+        guard let data = recipeData else { return } // do nothing
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.interactor.saveRecipe(with: data)
+        }
+    }
+    
     /// Handles calling `viewDidLoad` method from view.
     func viewDidLoad() {
         interactor.provideRecipeData()

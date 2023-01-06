@@ -23,7 +23,7 @@ public final class RecipeFormAssembly {
     
     public static func assemble(with context: RecipeFormContext) -> RecipeFormAssembly {
         let router = RecipeFormRouter()
-        let interactor = RecipeFormInteractor()
+        let interactor = RecipeFormInteractor(coreDataManager: context.moduleDependency, recipe: context.recipe)
         let presenter = RecipeFormPresenter(router: router, interactor: interactor)
         let viewController = RecipeFormViewController(presenter: presenter)
         
@@ -31,8 +31,6 @@ public final class RecipeFormAssembly {
         presenter.moduleOutput = context.moduleOutput
         
         interactor.presenter = presenter
-        interactor.recipe = context.recipe
-        
         router.viewController = viewController
         router.presenter = presenter
         
@@ -51,9 +49,11 @@ public final class RecipeFormAssembly {
 public struct RecipeFormContext {
     weak var moduleOutput: RecipeFormModuleOutput?
     let recipe: Recipe?
+    let moduleDependency: CoreDataManagerProtocol
     
-    public init(moduleOutput: RecipeFormModuleOutput?, recipe: Recipe?) {
+    public init(moduleOutput: RecipeFormModuleOutput?, recipe: Recipe?, moduleDependency: CoreDataManagerProtocol) {
         self.moduleOutput = moduleOutput
         self.recipe = recipe
+        self.moduleDependency = moduleDependency
     }
 }
