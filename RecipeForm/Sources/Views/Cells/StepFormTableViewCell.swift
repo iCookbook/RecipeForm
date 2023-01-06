@@ -76,6 +76,15 @@ final class StepFormTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        stepNumberLabel.text = nil
+        stepDescriptionTextView.text = Texts.RecipeForm.stepDescriptionPlaceholder
+        stepDescriptionTextView.textColor = Colors.placeholderText
+        stepImageView.image = Images.RecipeForm.sampleStepImage
+    }
+    
     // MARK: - Public Methods
     
     public func configure(with stepData: StepData, number: Int) {
@@ -88,7 +97,7 @@ final class StepFormTableViewCell: UITableViewCell {
         
         if let data = stepData.imageData {
             stepImageView.image = UIImage(data: data)
-            stepImageView.heightAnchor.constraint(equalToConstant: sourceView?.view.frame.height ?? 333 * 0.3).isActive = true
+//            stepImageView.heightAnchor.constraint(equalToConstant: sourceView?.view.frame.height ?? 333 * 0.3).isActive = true
         }
     }
     
@@ -121,6 +130,7 @@ final class StepFormTableViewCell: UITableViewCell {
             
             stepImageView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
             stepImageView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            stepImageView.heightAnchor.constraint(equalToConstant: contentView.frame.width - 100),
             stepImageView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
         ])
     }
@@ -142,6 +152,12 @@ extension StepFormTableViewCell: UIImagePickerControllerDelegate, UINavigationCo
         }
         
         stepImageView.image = image
+        
+        guard let data = image.pngData() else {
+            Logger.log("Could convert edited image in raw data", logType: .warning)
+            return
+        }
+        sourceView?.updateStepData(with: data, in: indexPath?.row ?? 0)
     }
 }
 
@@ -152,6 +168,11 @@ extension StepFormTableViewCell: UITextViewDelegate {
     /// Adds dynamic height to the TextView and provide data.
     func textViewDidChange(_ textView: UITextView) {
         sourceView?.updateHeightOfRow(self, textView)
+        
+        guard let text = textView.text,
+              let row = indexPath?.row else { return } // do nothing
+        
+        sourceView?.updateStepData(with: text, in: row)
     }
     
     /// Adds placeholder to the TextView.
@@ -164,7 +185,7 @@ extension StepFormTableViewCell: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = Texts.RecipeForm.notesPlaceholder
+            textView.text = Texts.RecipeForm.stepDescriptionPlaceholder
             textView.textColor = Colors.placeholderText
         }
     }

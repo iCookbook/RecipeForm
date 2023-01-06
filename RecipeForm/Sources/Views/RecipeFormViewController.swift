@@ -108,6 +108,14 @@ final class RecipeFormViewController: UIViewController {
         unregisterForKeyboardNotifications()
     }
     
+    func updateStepData(with text: String, in row: Int) {
+        recipeData.steps?[row].text = text
+    }
+    
+    func updateStepData(with imageData: Data, in row: Int) {
+        recipeData.steps?[row].imageData = imageData
+    }
+    
     // MARK: - Private Methods
     
     @objc private func dismissThisModule() {
@@ -179,6 +187,7 @@ extension RecipeFormViewController: RecipeFormViewInput {
         self.recipeData = recipeData
         
         if viewToUpdateFlag {
+            recipeImageView.image = UIImage(data: recipeData.imageData ?? Resources.Images.sampleRecipeImage.pngData()!)
             tableView.reloadData()
         }
     }
