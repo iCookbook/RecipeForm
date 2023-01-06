@@ -11,6 +11,11 @@ import Models
 import Resources
 import Logger
 
+protocol RecipeFormTableViewCellDelegate: AnyObject {
+    var recipeData: RecipeData { get set }
+    func updateHeightOfRow(_ cell: UITableViewCell, _ textView: UITextView)
+}
+
 final class RecipeFormViewController: UIViewController {
     
     /// View model.
@@ -58,6 +63,7 @@ final class RecipeFormViewController: UIViewController {
     
     private lazy var tableView: UITableView = {
         let tableView = TableView(frame: .zero, style: .grouped)
+        tableView.allowsSelection = false
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(RecipeFormTableViewCell.self, forCellReuseIdentifier: RecipeFormTableViewCell.identifier)
@@ -106,23 +112,24 @@ final class RecipeFormViewController: UIViewController {
     
     @objc private func dismissThisModule() {
         
-        defer {
-            presenter.dismissThisModule()
-        }
-        
         if saveBarButton.isEnabled {
             let alert = UIAlertController(title: Texts.RecipeForm.unsavedChangesTitle, message: Texts.RecipeForm.unsavedChangesDescription, preferredStyle: .actionSheet)
             let yes = UIAlertAction(title: Texts.RecipeForm.save, style: .destructive, handler: { [unowned self] _ in
                 presenter.saveRecipe(with: recipeData)
+                presenter.dismissThisModule()
             })
-            let no = UIAlertAction(title: Texts.RecipeForm.cancel, style: .cancel)
+            let no = UIAlertAction(title: Texts.Errors.close, style: .default, handler: { [unowned self] _ in
+                presenter.dismissThisModule()
+            })
+            let cancel = UIAlertAction(title: Texts.RecipeForm.cancel, style: .cancel)
             
             alert.addAction(yes)
             alert.addAction(no)
+            alert.addAction(cancel)
             
-            /// For definition try to open declaration of this function in CommonUI.UIAlertController.swift
-            alert.negativeWidthConstraint()
             present(alert, animated: true)
+        } else {
+            presenter.dismissThisModule()
         }
     }
     
@@ -131,6 +138,7 @@ final class RecipeFormViewController: UIViewController {
     }
     
     @objc private func saveButtonTapped() {
+        saveBarButton.isEnabled = false
         presenter.saveRecipe(with: recipeData)
     }
     
@@ -200,8 +208,8 @@ extension RecipeFormViewController: UITableViewDataSource, UITableViewDelegate {
             /// Text fields for fats, calories etc.
             return 6
         case 2:
-            /// _Steps_ section. We need to add 1 for new step.
-            return recipeData.steps?.count ?? 0 + 1
+            /// _Steps_ section.
+            return 10
         default:
             Logger.log("Unexpected section \(section)", logType: .warning)
             return 0
@@ -212,21 +220,23 @@ extension RecipeFormViewController: UITableViewDataSource, UITableViewDelegate {
         switch indexPath.section {
         case 0...1:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: RecipeFormTableViewCell.identifier, for: indexPath) as? RecipeFormTableViewCell else {
-                fatalError()
+                fatalError("Could not cast cell at indexPath \(indexPath) to 'RecipeFormTableViewCell' in 'RecipeForm' module")
             }
             cell.delegate = self
+            cell.recipeData = recipeData
             cell.configure(with: indexPath)
             return cell
         case 2:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: StepFormTableViewCell.identifier, for: indexPath) as? StepFormTableViewCell else {
-                fatalError()
+                fatalError("Could not cast cell at indexPath \(indexPath) to 'StepFormTableViewCell' in 'RecipeForm' module")
             }
+            cell.sourceView = self
             
             guard let stepData = recipeData.steps?[indexPath.row] else {
                 return cell
             }
             
-            cell.configure(with: stepData)
+            cell.configure(with: stepData, number: indexPath.row + 1)
             return cell
         default:
             Logger.log("Unexpected section \(indexPath.section)", logType: .error)
@@ -243,7 +253,7 @@ extension RecipeFormViewController: UITableViewDataSource, UITableViewDelegate {
 
 extension RecipeFormViewController: RecipeFormTableViewCellDelegate {
     
-    func updateHeightOfRow(_ cell: RecipeFormTableViewCell, _ textView: UITextView) {
+    func updateHeightOfRow(_ cell: UITableViewCell, _ textView: UITextView) {
         let size = textView.bounds.size
         let newSize = tableView.sizeThatFits(CGSize(width: size.width, height: CGFloat.greatestFiniteMagnitude))
         
@@ -255,6 +265,26 @@ extension RecipeFormViewController: RecipeFormTableViewCellDelegate {
                 tableView.scrollToRow(at: thisIndexPath, at: .bottom, animated: false)
             }
         }
+    }
+}
+
+// MARK: - UIImagePickerControllerDelegate
+
+extension RecipeFormViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        defer {
+            picker.dismiss(animated: true)
+        }
+        
+        guard let image = info[.editedImage] as? UIImage else {
+            Logger.log("Could not define edited image", logType: .error)
+            return
+        }
+        
+        recipeImageView.image = image
+        recipeData.imageData = image.pngData()
     }
 }
 
@@ -282,24 +312,5 @@ private extension RecipeFormViewController {
     
     @objc func keyboardWillHide(notification: NSNotification) {
         tableView.contentInset = .zero
-    }
-}
-
-// MARK: - UIImagePickerControllerDelegate
-
-extension RecipeFormViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        defer {
-            picker.dismiss(animated: true)
-        }
-        
-        guard let image = info[.editedImage] as? UIImage else {
-            Logger.log("Could not define edited image", logType: .error)
-            return
-        }
-        
-        recipeImageView.image = image
-        recipeData.imageData = image.pngData()
     }
 }

@@ -10,11 +10,6 @@ import Resources
 import Models
 import Logger
 
-protocol RecipeFormTableViewCellDelegate: AnyObject {
-    var recipeData: RecipeData { get set }
-    func updateHeightOfRow(_ cell: RecipeFormTableViewCell, _ textView: UITextView)
-}
-
 final class RecipeFormTableViewCell: UITableViewCell {
     
     var recipeData: RecipeData?
@@ -23,9 +18,9 @@ final class RecipeFormTableViewCell: UITableViewCell {
     // MARK: - Private Properties
     
     /// We use `10` as control value, because it is the value where all words will be in plural form.
-    private let labelsArray = [Texts.RecipeDetails.calories(count: 10),
-                               Texts.RecipeDetails.minutes(count: 10),
+    private let labelsArray = [Texts.RecipeDetails.minutes(count: 10),
                                Texts.RecipeDetails.servings(count: 10),
+                               Texts.RecipeDetails.calories(count: 10),
                                Texts.RecipeDetails.protein(count: 10),
                                Texts.RecipeDetails.fat(count: 10),
                                Texts.RecipeDetails.carbs(count: 10)]
@@ -33,6 +28,7 @@ final class RecipeFormTableViewCell: UITableViewCell {
     private lazy var label: UILabel = {
         let label = UILabel()
         label.isHidden = true
+        label.font = Fonts.body()
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -51,7 +47,6 @@ final class RecipeFormTableViewCell: UITableViewCell {
         textView.textColor = Colors.placeholderText
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.resignFirstResponder()
-        textView.accessibilityIdentifier = "notesTextView"
         return textView
     }()
     
@@ -65,6 +60,15 @@ final class RecipeFormTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        label.isHidden = true
+        titleTextField.isHidden = true
+        decimalTextField.isHidden = true
+        notesTextView.isHidden = true
     }
     
     // MARK: - Public Methods
@@ -88,16 +92,16 @@ final class RecipeFormTableViewCell: UITableViewCell {
             
             switch indexPath.row {
             case 0:
-                if let calories = recipeData?.calories {
-                    value = String(calories)
-                }
-            case 1:
                 if let cookingTime = recipeData?.cookingTime {
                     value = String(cookingTime)
                 }
-            case 2:
+            case 1:
                 if let numberOfServings = recipeData?.numberOfServings {
                     value = String(numberOfServings)
+                }
+            case 2:
+                if let calories = recipeData?.calories {
+                    value = String(calories)
                 }
             case 3:
                 if let proteins = recipeData?.proteins {
@@ -187,7 +191,17 @@ extension RecipeFormTableViewCell: UITextFieldDelegate {
     @objc private func decimalTextFieldChange(_ sender: UITextField) {
         switch indexPath {
         case [1, 0]:
-            delegate?.recipeData.name = sender.text ?? ""
+            delegate?.recipeData.cookingTime = Int32(sender.text ?? "0")
+        case [1, 1]:
+            delegate?.recipeData.numberOfServings = Int32(sender.text ?? "0")
+        case [1, 2]:
+            delegate?.recipeData.calories = Double(sender.text ?? "0.0")
+        case [1, 3]:
+            delegate?.recipeData.proteins = Double(sender.text ?? "0.0")
+        case [1, 4]:
+            delegate?.recipeData.fats = Double(sender.text ?? "0.0")
+        case [1, 5]:
+            delegate?.recipeData.carbohydrates = Double(sender.text ?? "0.0")
         default:
             break
         }
@@ -197,6 +211,7 @@ extension RecipeFormTableViewCell: UITextFieldDelegate {
 // MARK: - UITextViewDelegate
 
 extension RecipeFormTableViewCell: UITextViewDelegate {
+    
     /// Adds dynamic height to the TextView and provide data.
     func textViewDidChange(_ textView: UITextView) {
         if let deletate = delegate {
