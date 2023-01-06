@@ -26,3 +26,7 @@ This module has 2 dependencies:
 
 | <img width=300 src=""> | <img width=300 src=""> | <img width=300 src=""> |
 |---|---|---|
+
+---
+
+For more details, read [GitHub Wiki](https://github.com/iCookbook/RecipeForm/wiki) documentation
