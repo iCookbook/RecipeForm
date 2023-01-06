@@ -34,10 +34,16 @@ extension RecipeFormPresenter: RecipeFormViewOutput {
         interactor.provideRecipeData()
     }
     
+    /// Tries to define whether bar button should be enabled or not.
+    ///
+    /// - Parameter recipeData: Recipe data to check.
     func checkBarButtonEnabled(_ recipeData: RecipeData) {
         interactor.checkBarButtonEnabled(recipeData)
     }
     
+    /// Tells interactor to save recipe.
+    ///
+    /// - Parameter recipeData: Recipe data to save.
     func saveRecipe(with recipeData: RecipeData?) {
         guard let data = recipeData else { return } // do nothing
         

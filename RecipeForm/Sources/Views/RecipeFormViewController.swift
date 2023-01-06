@@ -108,10 +108,20 @@ final class RecipeFormViewController: UIViewController {
         unregisterForKeyboardNotifications()
     }
     
+    /// Updates step data for step.
+    ///
+    /// - Parameters:
+    ///   - text: Step's descriotion.
+    ///   - row: Step's index.
     func updateStepData(with text: String, in row: Int) {
         recipeData.steps?[row].text = text
     }
     
+    /// Updates step data for step.
+    ///
+    /// - Parameters:
+    ///   - imageData: Step's image data.
+    ///   - row: Step's index.
     func updateStepData(with imageData: Data, in row: Int) {
         recipeData.steps?[row].imageData = imageData
     }
@@ -141,10 +151,12 @@ final class RecipeFormViewController: UIViewController {
         }
     }
     
+    /// Handles tapping on recipe image view.
     @objc private func handleTapOnRecipeImageView() {
         present(recipeImagePicker, animated: true)
     }
     
+    /// Handles tapping on _save_ bar button.
     @objc private func saveButtonTapped() {
         saveBarButton.isEnabled = false
         presenter.saveRecipe(with: recipeData)
@@ -181,6 +193,9 @@ final class RecipeFormViewController: UIViewController {
 
 extension RecipeFormViewController: RecipeFormViewInput {
     
+    /// Displays recipe data on view.
+    ///
+    /// - Parameter recipeData: Recipe data to be displayed.
     func displayData(_ recipeData: RecipeData) {
         /// We do not need to update view if recipe was not provided for this module originally.
         let viewToUpdateFlag = recipeData != RecipeData.default
@@ -262,6 +277,11 @@ extension RecipeFormViewController: UITableViewDataSource, UITableViewDelegate {
 
 extension RecipeFormViewController: RecipeFormTableViewCellDelegate {
     
+    /// Updates height of table view cell.
+    ///
+    /// - Parameters:
+    ///   - cell: Cell to be change height.
+    ///   - textView: Text view to get size from.
     func updateHeightOfRow(_ cell: UITableViewCell, _ textView: UITextView) {
         let size = textView.bounds.size
         let newSize = tableView.sizeThatFits(CGSize(width: size.width, height: CGFloat.greatestFiniteMagnitude))
@@ -282,7 +302,6 @@ extension RecipeFormViewController: RecipeFormTableViewCellDelegate {
 extension RecipeFormViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
         defer {
             picker.dismiss(animated: true)
         }
