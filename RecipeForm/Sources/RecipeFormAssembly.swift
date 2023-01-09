@@ -6,7 +6,6 @@
 //  
 
 import UIKit
-import Persistence
 
 public final class RecipeFormAssembly {
     
@@ -21,9 +20,9 @@ public final class RecipeFormAssembly {
     
     // MARK: - Public Methods
     
-    public static func assemble(with context: RecipeFormContext) -> RecipeFormAssembly {
+    public static func assemble(with context: RecipeFormDependenciesProtocol) -> RecipeFormAssembly {
         let router = RecipeFormRouter()
-        let interactor = RecipeFormInteractor(coreDataManager: context.moduleDependency, recipe: context.recipe)
+        let interactor = RecipeFormInteractor(coreDataManager: context.coreDataManager, recipe: context.dataModel)
         let presenter = RecipeFormPresenter(router: router, interactor: interactor)
         let viewController = RecipeFormViewController(presenter: presenter)
         
@@ -43,17 +42,5 @@ public final class RecipeFormAssembly {
         self.viewController = view
         self.input = input
         self.router = router
-    }
-}
-
-public struct RecipeFormContext {
-    weak var moduleOutput: RecipeFormModuleOutput?
-    let recipe: Recipe?
-    let moduleDependency: CoreDataManagerProtocol
-    
-    public init(moduleOutput: RecipeFormModuleOutput?, recipe: Recipe?, moduleDependency: CoreDataManagerProtocol) {
-        self.moduleOutput = moduleOutput
-        self.recipe = recipe
-        self.moduleDependency = moduleDependency
     }
 }

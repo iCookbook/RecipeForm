@@ -7,6 +7,13 @@
 
 import Foundation
 import Models
+import Persistence
+
+public protocol RecipeFormDependenciesProtocol {
+    var moduleOutput: RecipeFormModuleOutput? { get set }
+    var dataModel: Persistence.Recipe? { get }
+    var coreDataManager: CoreDataManagerProtocol { get }
+}
 
 public protocol RecipeFormModuleInput {
     var moduleOutput: RecipeFormModuleOutput? { get }

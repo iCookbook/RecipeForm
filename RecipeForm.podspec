@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'RecipeForm'
-  s.version          = '1.0.0'
+  s.version          = '2.0.0'
   s.summary          = 'RecipeForm module of the Cookbook app.'
   s.homepage         = 'https://github.com/htmlprogrammist/RecipeForm'
   s.author           = { 'htmlprogrammist' => '60363270+htmlprogrammist@users.noreply.github.com' }
